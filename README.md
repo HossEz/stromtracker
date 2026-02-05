@@ -1,4 +1,4 @@
-# Electricity Tracker Bot
+# Strøm Tracker Bot
 
 A Telegram bot for tracking appliance electricity costs in Norway using real-time spot prices.
 
