@@ -8,7 +8,7 @@ You register appliances (e.g., a 1000W heater). When you turn it on, you tell th
 When you turn it off, you tell the bot. It calculates the exact cost using hour-by-hour
 spot prices from hvakosterstrommen.no.
 
-This is useful if you want to know what a specific appliance costs to run.
+This is useful if you'd like to know what a specific appliance costs to run.
 
 ## Limitations
 
@@ -34,14 +34,23 @@ This is useful if you want to know what a specific appliance costs to run.
 
 | Command | Description |
 |---------|-------------|
+| `/start` | Welcome message |
+| `/help` | Full command list and formulas |
 | `/add [name] [low] [high]` | Add appliance (e.g., `/add Heater 750 1500`) |
+| `/list` | Show all registered appliances |
+| `/delete [name]` | Remove an appliance |
 | `/use` | Start tracking (shows buttons) |
 | `/stop` | End session, show cost |
-| `/mnd` | Monthly summary |
-| `/config` | View settings |
+| `/cancel` | Cancel session without recording |
+| `/status` | Check runtime and estimated cost |
+| `/mnd` | Monthly summary (or `/mnd 1` for January) |
+| `/history` | Recent sessions |
+| `/budget [kr]` | Set/view monthly budget |
 | `/set_fastkost [kr]` | Set fixed cost per kWh |
 | `/set_region [NO1-NO5]` | Set price region |
-| `/help` | Full command list |
+| `/set_periode [day]` | Set billing period start day |
+| `/config` | View all settings |
+| `/clear` | Clear session history |
 
 ## How cost is calculated
 
@@ -55,5 +64,3 @@ Total = Spot cost + Fixed cost
 Prices are fetched per-hour from hvakosterstrommen.no, which sources from Nord Pool.
 
 ---
-
-Data source: hvakosterstrommen.no
