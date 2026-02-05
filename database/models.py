@@ -8,8 +8,12 @@ import os
 from datetime import datetime
 from typing import Optional
 import logging
+from zoneinfo import ZoneInfo
 
 logger = logging.getLogger(__name__)
+
+# Norwegian timezone - CRITICAL: must match price_api.py
+NORWAY_TZ = ZoneInfo("Europe/Oslo")
 
 # Database file path (same directory as this module's parent)
 DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "stromtracker.db")
@@ -157,7 +161,7 @@ def start_session(user_id: int, apparat_id: int, watt_mode: str, actual_watt: in
     cursor.execute(
         """INSERT INTO sessions (user_id, apparat_id, start_time, watt_mode, actual_watt)
            VALUES (?, ?, ?, ?, ?)""",
-        (user_id, apparat_id, datetime.now().isoformat(), watt_mode, actual_watt)
+        (user_id, apparat_id, datetime.now(NORWAY_TZ).isoformat(), watt_mode, actual_watt)
     )
     session_id = cursor.lastrowid
     conn.commit()
@@ -189,7 +193,7 @@ def end_session(session_id: int, kwh: float, spot_cost: float, fixed_cost: float
         """UPDATE sessions 
            SET end_time = ?, kwh = ?, spot_cost_nok = ?, fixed_cost_nok = ?, total_cost_nok = ?
            WHERE id = ?""",
-        (datetime.now().isoformat(), kwh, spot_cost, fixed_cost, total_cost, session_id)
+        (datetime.now(NORWAY_TZ).isoformat(), kwh, spot_cost, fixed_cost, total_cost, session_id)
     )
     conn.commit()
     conn.close()
@@ -201,7 +205,7 @@ def cancel_session(session_id: int) -> None:
     cursor = conn.cursor()
     cursor.execute(
         "UPDATE sessions SET cancelled = TRUE, end_time = ? WHERE id = ?",
-        (datetime.now().isoformat(), session_id)
+        (datetime.now(NORWAY_TZ).isoformat(), session_id)
     )
     conn.commit()
     conn.close()
