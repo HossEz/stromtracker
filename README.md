@@ -1,48 +1,59 @@
 # Electricity Tracker Bot
 
-A specialized Telegram bot for tracking electricity consumption and costs in Norway using real-time hourly spot prices from `hvakosterstrommen.no`.
+A Telegram bot for tracking appliance electricity costs in Norway using real-time spot prices.
 
-## Features
+## What it does
 
-- **Real-time Spot Prices:** Automatically fetches NO1-NO5 prices (includes 25% MVA).
-- **Accurate Calculation:** Hour-by-hour cost calculation for precise session totals.
-- **Mobile Friendly:** Fully button-driven interface—no typing required to start/stop.
-- **Monthly Budgeting:** Set a budget and get alerts as you approach your limit.
-- **History & Reports:** View recent sessions and monthly summaries.
-- **Customizable:** Adjust fixed costs (nettleie), billing periods, and price regions.
+You register appliances (e.g., a 1000W heater). When you turn it on, you tell the bot.
+When you turn it off, you tell the bot. It calculates the exact cost using hour-by-hour
+spot prices from hvakosterstrommen.no.
 
-## Quick Start
+This is useful if you want to know what a specific appliance costs to run.
 
-### 1. Prerequisites
-- Python 3.10+
-- A Telegram Bot Token (get it from [@BotFather](https://t.me/BotFather))
+## Limitations
 
-### 2. Setup
-1. Clone this repository.
-2. Create a `.env` file in the root folder (or just rename `.env.example`):
-   ```env
+- **Spot prices only:** It uses the "Energiledd" (per-kWh fee). It does NOT track the
+  "Kapasitetsledd" (monthly capacity fee based on peak usage). Your actual bill may be higher.
+- **Fixed cost is simplified:** The default fixed cost is 1.0 kr/kWh. You must adjust
+  `/set_fastkost` to match your actual grid rent if you want accurate results.
+- **API dependency:** If hvakosterstrommen.no is down, the bot uses a hardcoded fallback
+  price of 1.50 kr/kWh and will warn you.
+
+## Setup
+
+1. Get a bot token from [@BotFather](https://t.me/BotFather) on Telegram.
+2. Create a `.env` file:
+   ```
    TELEGRAM_BOT_TOKEN=your_token_here
    ```
-3. Run the launcher:
-   - **Windows:** Double-click `start.bat`
-   - **Linux/macOS:** `chmod +x start.sh && ./start.sh`
+3. Run:
+   - Windows: `start.bat`
+   - Linux/macOS: `./start.sh`
 
 ## Commands
 
-- `/start` - Welcome and quick start guide.
-- `/add` - Add a new appliance (e.g., `/add Heater 750 1500`).
-- `/use` - Pick an appliance and start tracking.
-- `/status` - Check current session runtime and estimated cost.
-- `/stop` - End session and see the cost breakdown.
-- `/mnd` - View monthly summary.
-- `/config` - See all your current settings.
-- `/help` - Full command list and cost formulas.
+| Command | Description |
+|---------|-------------|
+| `/add [name] [low] [high]` | Add appliance (e.g., `/add Heater 750 1500`) |
+| `/use` | Start tracking (shows buttons) |
+| `/stop` | End session, show cost |
+| `/mnd` | Monthly summary |
+| `/config` | View settings |
+| `/set_fastkost [kr]` | Set fixed cost per kWh |
+| `/set_region [NO1-NO5]` | Set price region |
+| `/help` | Full command list |
 
-## How it calculates
-Costs are calculated using the formula:
-`Total = (kWh × Spot Price with MVA) + (kWh × Fixed Cost)`
+## How cost is calculated
 
-*Fixed cost includes your local nettleie, taxes, and fees (default 1 kr/kWh).*
+```
+kWh = hours × (watts / 1000)
+Spot cost = kWh × spot price (includes 25% MVA)
+Fixed cost = kWh × fixed cost
+Total = Spot cost + Fixed cost
+```
+
+Prices are fetched per-hour from hvakosterstrommen.no, which sources from Nord Pool.
 
 ---
-_Data provided by [hvakosterstrommen.no](https://www.hvakosterstrommen.no/)_
+
+Data source: hvakosterstrommen.no
